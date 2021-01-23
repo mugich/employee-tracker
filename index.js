@@ -94,7 +94,7 @@ function viewAllEmployees() {
   return managerArray;
 }
 
-var manager = selectManager();
+ 
 
 function selectRole(){
   var choiceArray = [];
@@ -108,7 +108,7 @@ function selectRole(){
   return choiceArray;
 }
 
-var role = selectRole();
+
 
 function addEmployees(){
   
@@ -128,19 +128,19 @@ function addEmployees(){
       type: "list",
       message: "What is the employee's role?",
       name: "roleName",
-      choices: role
+      choices:  selectRole()
     },
     {
       type: "rawlist",
       message: "Who is the employee's manager?",
       name: "managerName",
-      choices: manager
+      choices: selectManager()
     }
     ])
     .then(function (answer){
 
-      var roleId = role.indexOf(answer.roleName) + 1
-      var managerId = manager.indexOf(answer.managerName) + 1
+      var roleId = selectRole().indexOf(answer.roleName) + 1
+      var managerId = selectManager().indexOf(answer.managerName) + 1
       
       connection.query("insert into employee set ?",
     
@@ -188,7 +188,7 @@ function addEmployees(){
     })
   }
   function addRoles() { 
-    connection.query("SELECT role.title AS Title, role.salary AS Salary FROM role",   function(err, res) {
+   
       inquirer.prompt([
           {
             name: "Title",
@@ -216,8 +216,8 @@ function addEmployees(){
           )
   
       });
-    });
-    }
+    };
+ 
     function updateEmployeeRoles() {
       connection.query("SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;", function(err, res) {
        if (err) throw err      
@@ -235,13 +235,13 @@ function addEmployees(){
               message: "What is the Employee's last name? ",
             },
             {
-              name: "roleName",
+              name: "role",
               type: "rawlist",
               message: "What is the Employee's new title? ",
-              choices: role
+              choices: selectRole()
             },
         ]).then(function(answer) {
-          var roleId = role.indexOf(answer.roleName) + 1
+          var roleId = selectRole().indexOf(answer.role) + 1
           connection.query("UPDATE employee SET WHERE ?", 
           {
             last_name: answer.lastName
