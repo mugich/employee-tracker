@@ -36,6 +36,18 @@ function init(){
       else if(answer.action ==="View all employees"){
         viewAllEmployees();
       }
+      else if(answer.action ==="Add department"){
+        addDepartment();
+      }
+      else if(answer.action ==="Add roles"){
+        addRoles();
+      }
+      else if(answer.action ==="Add employees"){
+        addEmployees();
+      }
+      else if(answer.action ==="Update Employee roles"){
+        updateEmployeeRoles();
+      }
       else{
         connection.end();
       }
@@ -67,4 +79,93 @@ function viewAllEmployees() {
     init();
   });
 }
+
+ function selectManager(){
+  managerArray = [];
+  connection.query("SELECT first_name FROM employee WHERE manager_id IS NULL", function(err, res){
+    
+    if (err) throw err;
+    for (var i = 0; i < res.length; i++){
+      managerArray.push(res[i].first_name);
+      // console.log(managerArray);
+
+    }
+  })
+  return managerArray;
+}
+
+var manager = selectManager();
+
+function selectRole(){
+  var choiceArray = [];
+  connection.query("select * from role", function(err, result){
+    if(err) throw err;
+  
+  for (var i = 0; i < result.length; i++){
+    choiceArray.push(result[i].title);
+    // console.log(choiceArray);
+   } })
+  return choiceArray;
+}
+
+var role = selectRole();
+
+function addEmployees(){
+  
+  
+   
+
+    inquirer.prompt([
+      {
+      type: "input",
+      message: "What is the employee's first name?",
+      name: "firstName"
+    },
+    {
+      type: "input",
+      message: "what is the employee's last name?",
+      name: "lastName"
+    },
+    {
+      type: "list",
+      message: "What is the employee's role?",
+      name: "role",
+      choices: role
+    },
+    {
+      type: "rawlist",
+      message: "Who is the employee's manager?",
+      name: "manager",
+      choices: manager
+    }
+    ])
+    .then(function (answer){
+
+      var roleId = role.indexOf(answer.role) + 1
+      var managerId = manager.indexOf(answer.choice) + 1
+      
+    
+      connection.query("insert into employee set ?",
+      
+
+        {
+        first_name: answer.firstName, 
+        last_name: answer.lastName,
+        role_id: roleId,
+        manager_id: managerId
+      }),
+
+      function(err){
+        if(err) throw err;
+
+        console.log("successfully!");
+        // console.table();
+        init();
+      }
+     
+  
+    })
+
+
+  }
 
