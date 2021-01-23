@@ -24,16 +24,16 @@ function init(){
       name:"action",
       message: "What would you like to do?",
       type: "list",
-      choices: ["View department", "View roles", "View all employees", "Add department", "Add roles", "Add employees", "Update Employee roles", "EXIT"] 
+      choices: ["View all department", "View all roles", "View all employees", "Add department", "Add roles", "Add employees", "Update Employee roles", "EXIT"] 
     })
     .then(function(answer){
-      if (answer.action === "View department"){
-        viewDepartment();
+      if (answer.action === "View all department"){
+        viewAllDepartment();
       }
-      else if(answer.action === "View roles"){
-        viewRoles();
+      else if(answer.action === "View all roles"){
+        viewAllRoles();
       }
-      else if(answer.action ==="View employees"){
+      else if(answer.action ==="View all employees"){
         viewAllEmployees();
       }
       else{
@@ -42,23 +42,25 @@ function init(){
     });
 }
 
-function viewDepartment() {
+function viewAllDepartment() {
 
-  connection.query("select * from department", function(err, result){
+  connection.query("SELECT employee.first_name, employee.last_name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY employee.id;", 
+  function(err, result){
     if(err) throw err;
-    console.log(result);
+    console.table(result);
     init();
   });
 }
-function viewRoles() {
-  connection.query("select * from role", function(err, result){
+function viewAllRoles() {
+  connection.query("SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
+   function(err, result){
     if(err) throw err;
-    console.log(result);
+    console.table(result);
     init();
   });
 }
 function viewAllEmployees() {
-  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS Department, role.salary, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+  connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS Department, role.salary, CONCAT(employee.first_name, ' ' ,employee.last_name) AS Manager FROM employee INNER JOIN role on role.id =employee.role_id INNER JOIN department on department.id = role.department_id;",
    function(err, result){
     if(err) throw err;
     console.table(result);
